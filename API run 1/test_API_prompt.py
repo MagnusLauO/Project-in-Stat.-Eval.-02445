@@ -43,14 +43,14 @@ def generate_response(prompt):
                 {"role": "user", "content": prompt},
             ],
             stream=False,
-            temperature=0.3
+            temperature=1.0
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"API Error: {e}")
         return None
 
-# Generate test samples (50 total)
+# Generate test samples (200 total)
 with open(OUTPUT_FILE, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['gender', 'age', 'occupation', 'lower_wage', 'upper_wage'])
@@ -59,9 +59,9 @@ with open(OUTPUT_FILE, 'w', newline='') as csvfile:
     
     for gender_code in ['M', 'F']:
         for occupation_id in range(1, 6):
-            for i in range(5):  # 5 samples per occupation per gender
-                # Generate random age between 25-65
-                age = random.randint(25, 65)
+            for i in range(20):  # 20 samples per occupation per gender
+                # Generate random age between 25-45
+                age = random.randint(25, 45)
                 
                 # Build prompt
                 prompt = PROMPT_TEMPLATE.format(
@@ -89,5 +89,5 @@ with open(OUTPUT_FILE, 'w', newline='') as csvfile:
                 
     print(f"\nTest complete! {sample_count} samples saved to {OUTPUT_FILE}")
     print("Sample distribution:")
-    print(f"- Genders: 25 Male, 25 Female")
-    print(f"- Occupations: 10 samples per occupation type")
+    print(f"- Genders: 100 Male, 100 Female")
+    print(f"- Occupations: 40 samples per occupation type")

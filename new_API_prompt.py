@@ -30,8 +30,7 @@ PROMPT_TEMPLATE = """What is my expected monthly pay in DKK before taxes as a {a
     - 4: police officer
     - 5: marketing consultant
 - lower_wage is a continuous number
-- upper_wage is a continuous number
-Your response should be of low temperature in LLM-terms."""
+- upper_wage is a continuous number"""
 
 def generate_response(prompt):
     """Get API response with error handling"""
@@ -43,7 +42,7 @@ def generate_response(prompt):
                 {"role": "user", "content": prompt},
             ],
             stream=False,
-            temperature=0
+            temperature=1.0
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
