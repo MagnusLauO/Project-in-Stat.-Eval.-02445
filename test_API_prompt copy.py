@@ -6,7 +6,7 @@ import time
 # Configuration
 API_KEY = "sk-0e1d62e63e10444b99b753f0991a2225"
 MODEL = "deepseek-chat"
-OUTPUT_FILE = "salaries.csv"
+OUTPUT_FILE = "test_salaries.csv"
 OCCUPATION_MAP = {
     1: "software developer",
     2: "teacher",
@@ -19,7 +19,7 @@ GENDER_MAP = {'M': 'male', 'F': 'female'}
 # Initialize client
 client = OpenAI(api_key=API_KEY, base_url="https://api.deepseek.com")
 
-# Prompt template - keep this EXACT structure
+# Prompt template
 PROMPT_TEMPLATE = """What is my expected monthly pay in DKK before taxes as a {age} year old {gender} working as a {occupation} in Denmark. Provide the answer as comma separated values on the form: gender,age,occupation,lower_wage,upper_wage
 - gender is either M (male) or F (female)
 - age is discreet value
@@ -43,23 +43,23 @@ def generate_response(prompt):
                 {"role": "user", "content": prompt},
             ],
             stream=False,
-            temperature=0
+            temperature=0.3
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         print(f"API Error: {e}")
         return None
 
-# Generate samples
+# Generate test samples (50 total)
 with open(OUTPUT_FILE, 'w', newline='') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['gender', 'age', 'occupation', 'lower_wage', 'upper_wage'])
     
-    total_samples = 0
+    sample_count = 0
     
     for gender_code in ['M', 'F']:
         for occupation_id in range(1, 6):
-            for _ in range(300):  # 300 samples per occupation per gender
+            for i in range(5):  # 5 samples per occupation per gender
                 # Generate random age between 25-65
                 age = random.randint(25, 65)
                 
@@ -70,31 +70,24 @@ with open(OUTPUT_FILE, 'w', newline='') as csvfile:
                     occupation=OCCUPATION_MAP[occupation_id]
                 )
                 
-                # Get API response with retries
-                response = None
-                for attempt in range(3):  # Max 3 attempts
-                    response = generate_response(prompt)
-                    if response and len(response.split(',')) == 5:
-                        break
-                    time.sleep(1)  # Wait before retry
-                    print(f"Retrying {gender_code}/{occupation_id} (attempt {attempt+1})")
+                # Get API response
+                response = generate_response(prompt)
                 
-                # Process valid response
                 if response and len(response.split(',')) == 5:
                     # Extract values from response
                     parts = response.split(',')
                     # Ensure occupation matches requested ID
                     parts[2] = str(occupation_id)
                     writer.writerow(parts)
-                    total_samples += 1
+                    sample_count += 1
+                    print(f"Generated sample {sample_count}: {','.join(parts)}")
                 else:
-                    print(f"Failed after retries: {gender_code}/{occupation_id}/{age}")
+                    print(f"Invalid response for {gender_code}/{occupation_id}/{age}: {response}")
                 
-                # Progress tracking
-                if total_samples % 100 == 0:
-                    print(f"Generated {total_samples}/3000 samples")
+                # Short delay between requests
+                time.sleep(0.2)
                 
-                # Rate limiting (adjust as needed)
-                time.sleep(0.15)  # ~7 calls/second
-
-print(f"Completed! {total_samples} samples saved to {OUTPUT_FILE}")
+    print(f"\nTest complete! {sample_count} samples saved to {OUTPUT_FILE}")
+    print("Sample distribution:")
+    print(f"- Genders: 25 Male, 25 Female")
+    print(f"- Occupations: 10 samples per occupation type")
