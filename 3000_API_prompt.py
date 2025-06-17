@@ -4,7 +4,7 @@ import csv
 import time
 
 # Configuration
-API_KEY = "sk-0e1d62e63e10444b99b753f0991a2225"
+API_KEY = "sk-0e1d62e63e10444b99b753f0991a2225" #is defunct
 MODEL = "deepseek-chat"
 OUTPUT_FILE = "salaries.csv"
 OCCUPATION_MAP = {
