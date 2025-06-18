@@ -4,3 +4,5 @@ Relevant data/files/notebooks are:
   - The ANCOVA.ipynb contains the final ANCOVA analysis
   - The Mann Whitney test consolidated folder: Here the Mann-Whitney calculations and plots for all subgroups can be found.
   - 3000_API_prompt.py : The script used to generate the 3000-sized sample.
+  - Wilcoxon_copy.ipynb contains Wilcoxon analysis. 
+  - Outlier_detection.ipynb contains outlier detection.
